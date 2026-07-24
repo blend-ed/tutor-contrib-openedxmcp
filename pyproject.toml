@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tutor-contrib-openedxmcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Tutor plugin: MCP server + openedx-mcp Django app for staff/superuser admin (Ulmo)"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -17,6 +17,9 @@ openedxmcp = "tutoropenedxmcp.plugin"
 
 [tool.setuptools]
 packages = ["tutoropenedxmcp"]
+include-package-data = true
 
+# Belt-and-suspenders: MANIFEST.in (recursive-include) is the reliable source for
+# the nested templates/ tree in both sdist and wheel; the globs below are a fallback.
 [tool.setuptools.package-data]
-tutoropenedxmcp = ["templates/**/*", "patches/*"]
+tutoropenedxmcp = ["templates/**/*", "templates/**/.*", "patches/*"]
