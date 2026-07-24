@@ -1,8 +1,10 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-build/
-dist/
+# Anchored to repo root so the MCP server build context under
+# tutoropenedxmcp/templates/openedxmcp/build/ is NOT ignored.
+/build/
+/dist/
 .eggs/
 *.egg
 .venv/

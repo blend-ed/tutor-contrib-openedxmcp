@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openedxmcp"
+version = "0.1.0"
+description = "FastMCP server proxying to the openedx-mcp facade (staff/superuser admin)"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.2.0",
+    "httpx>=0.27",
+    "uvicorn>=0.30",
+    "starlette>=0.37",
+]
+
+[project.scripts]
+openedxmcp-server = "openedxmcp.server:main"
+
+[tool.setuptools]
+packages = ["openedxmcp", "openedxmcp.tools"]
