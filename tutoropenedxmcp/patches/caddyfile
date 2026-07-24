@@ -1,0 +1,6 @@
+{{ OPENEDXMCP_ENDPOINT }}{$default_site_port} {
+    @mcp {
+        path /mcp*
+    }
+    reverse_proxy @mcp openedxmcp:{{ OPENEDXMCP_PORT }}
+}

@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openedxmcp
+  labels:
+    app.kubernetes.io/name: openedxmcp
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openedxmcp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openedxmcp
+    spec:
+      containers:
+        - name: openedxmcp
+          image: {{ OPENEDXMCP_IMAGE }}
+          env:
+            - name: OPENEDXMCP_LMS_BASE_URL
+              value: "{{ OPENEDXMCP_LMS_BASE_URL }}"
+            - name: OPENEDXMCP_CMS_BASE_URL
+              value: "{{ OPENEDXMCP_CMS_BASE_URL }}"
+            - name: OPENEDXMCP_PORT
+              value: "{{ OPENEDXMCP_PORT }}"
+          ports:
+            - containerPort: {{ OPENEDXMCP_PORT }}
