@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutor-contrib-openedxmcp"
+version = "0.1.1"
+description = "Tutor plugin: MCP server + openedx-mcp Django app for staff/superuser admin (Ulmo)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "AGPL-3.0" }
+authors = [{ name = "Open edX MCP contributors" }]
+dependencies = ["tutor>=19.0.0,<22.0.0"]
+
+[project.entry-points."tutor.plugin.v1"]
+openedxmcp = "tutoropenedxmcp.plugin"
+
+[tool.setuptools]
+packages = ["tutoropenedxmcp"]
+
+[tool.setuptools.package-data]
+tutoropenedxmcp = ["templates/**/*", "patches/*"]

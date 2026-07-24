@@ -1,0 +1,3 @@
+openedxmcp:
+  ports:
+    - "{{ OPENEDXMCP_PORT }}:{{ OPENEDXMCP_PORT }}"

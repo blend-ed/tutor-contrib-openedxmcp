@@ -1,0 +1,10 @@
+openedxmcp:
+  image: {{ OPENEDXMCP_IMAGE }}
+  restart: unless-stopped
+  environment:
+    OPENEDXMCP_LMS_BASE_URL: "{{ OPENEDXMCP_LMS_BASE_URL }}"
+    OPENEDXMCP_CMS_BASE_URL: "{{ OPENEDXMCP_CMS_BASE_URL }}"
+    OPENEDXMCP_PORT: "{{ OPENEDXMCP_PORT }}"
+  depends_on:
+    - lms
+    - cms
