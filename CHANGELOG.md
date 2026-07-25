@@ -3,17 +3,20 @@
 All notable changes to `tutor-contrib-openedxmcp`. Format based on
 [Keep a Changelog](https://keepachangelog.com/). Ulmo release line.
 
+## [0.1.7]
+
+### Changed
+- Auto-install the `openedx-mcp` app via the
+  `openedx-dockerfile-post-python-requirements` patch again (hardcoded
+  `pip install openedx-mcp`, no custom config var) — zero operator steps. Pin a
+  version/source with `OPENEDX_EXTRA_PIP_REQUIREMENTS` if desired.
+
 ## [0.1.6]
 
 ### Changed
-- Install the `openedx-mcp` app via Tutor's standard
-  `OPENEDX_EXTRA_PIP_REQUIREMENTS` list instead of a custom
-  `OPENEDXMCP_PIP_REQUIREMENT` config + `openedx-dockerfile-post-python-requirements`
-  patch. Install now:
-  `tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp`.
-
-### Removed
-- `OPENEDXMCP_PIP_REQUIREMENT` config and its Dockerfile patch.
+- Dropped the custom `OPENEDXMCP_PIP_REQUIREMENT` config; briefly used
+  `OPENEDX_EXTRA_PIP_REQUIREMENTS` as the sole install path (superseded by 0.1.7's
+  zero-touch patch).
 
 ## [0.1.5]
 
@@ -46,6 +49,7 @@ All notable changes to `tutor-contrib-openedxmcp`. Format based on
 ### Changed
 - Tutor dependency pin widened to `>=19,<22` (Ulmo = Tutor v21).
 
+[0.1.7]: https://github.com/blend-ed/tutor-contrib-openedxmcp/releases/tag/v0.1.7
 [0.1.6]: https://github.com/blend-ed/tutor-contrib-openedxmcp/releases/tag/v0.1.6
 [0.1.5]: https://github.com/blend-ed/tutor-contrib-openedxmcp/releases/tag/v0.1.5
 [0.1.4]: https://github.com/blend-ed/tutor-contrib-openedxmcp/releases/tag/v0.1.4
