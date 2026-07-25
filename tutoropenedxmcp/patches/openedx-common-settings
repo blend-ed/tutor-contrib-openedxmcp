@@ -1,0 +1,3 @@
+# Tell the openedx-mcp Django app its own public MCP endpoint, so the key-
+# creation page in Django admin can show ready-to-paste Claude connect steps.
+OPENEDX_MCP_PUBLIC_URL = "{{ OPENEDXMCP_PUBLIC_URL }}"

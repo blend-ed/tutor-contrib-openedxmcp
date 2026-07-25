@@ -52,7 +52,7 @@ def register(mcp, client):
     @mcp.tool()
     def deactivate_user(username: str, confirm_token: str = "") -> dict:
         """Disable an account (is_active=False). Destructive. Call without
-        confirm_token to preview. Requires the destructive scope."""
+        confirm_token to preview. Requires write:users + destructive."""
         body = {"username": username}
         if confirm_token:
             body["confirm_token"] = confirm_token
@@ -64,8 +64,8 @@ def register(mcp, client):
         """Grant or revoke a role. action=grant|revoke. level is one of:
         global_staff, superuser (platform-wide), or a course role
         (instructor, staff, limited_staff, beta, data_researcher) — the latter
-        need course_id. Call without confirm_token to preview. Requires
-        write:users."""
+        need course_id. Course roles need write:roles; global_staff/superuser
+        need grant:admin. Call without confirm_token to preview."""
         body = {"username": username, "action": action, "level": level}
         if course_id:
             body["course_id"] = course_id
@@ -90,7 +90,7 @@ def register(mcp, client):
                           level: str = "staff", confirm_token: str = "") -> dict:
         """Allow or revoke instructor-dashboard access on a course (level
         staff|instructor|beta|data_researcher). action=grant|revoke. Call without
-        confirm_token to preview. Requires write:users."""
+        confirm_token to preview. Requires write:roles."""
         body = {"username": username, "course_id": course_id, "action": action, "level": level}
         if confirm_token:
             body["confirm_token"] = confirm_token
