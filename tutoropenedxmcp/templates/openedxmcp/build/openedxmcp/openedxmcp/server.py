@@ -11,10 +11,16 @@ import os
 import uvicorn
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
+from starlette.responses import JSONResponse
+from starlette.routing import Route
 
 from .auth import KeyHeaderMiddleware
 from .client import FacadeClient
 from .tools import register_all
+
+
+async def _health(_request):
+    return JSONResponse({"status": "ok", "service": "openedx-mcp-server"})
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("openedxmcp")
@@ -29,6 +35,9 @@ def build_app():
     mcp = FastMCP("openedx-admin", stateless_http=True, transport_security=security)
     register_all(mcp, lms, cms)
     app = mcp.streamable_http_app()
+    # Unauthenticated liveness route for container/k8s probes (the middleware
+    # lets /health through without a key).
+    app.router.routes.append(Route("/health", _health, methods=["GET"]))
     app.add_middleware(KeyHeaderMiddleware)
     return app
 

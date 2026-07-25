@@ -1,18 +1,52 @@
 # tutor-contrib-openedxmcp
 
-Tutor plugin that (1) pip-installs the `openedx-mcp` Django app into the LMS/CMS
-image and (2) runs the standalone FastMCP server that proxies to its facade,
-fronted by Caddy at `mcp.<LMS_HOST>`. Ulmo.
+[![PyPI](https://img.shields.io/pypi/v/tutor-contrib-openedxmcp.svg)](https://pypi.org/project/tutor-contrib-openedxmcp/)
+[![CI](https://github.com/blend-ed/tutor-contrib-openedxmcp/actions/workflows/ci.yml/badge.svg)](https://github.com/blend-ed/tutor-contrib-openedxmcp/actions/workflows/ci.yml)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-```bash
-pip install -e .
-tutor plugins enable openedxmcp
-tutor config save --set OPENEDXMCP_PIP_REQUIREMENT=./open-source/openedx-mcp
-tutor images build openedx openedxmcp
-tutor local launch && tutor local do init
+Tutor plugin that stands up the **Open edX Admin MCP** for staff/superusers:
+
+1. **Installs** the [`openedx-mcp`](https://pypi.org/project/openedx-mcp/) Django
+   app into the LMS/CMS image (the REST facade at `/api/mcp/` and `/api/mcp/cms/`).
+2. **Runs** a standalone `openedxmcp` container — a FastMCP streamable-http server
+   that proxies to that facade, fronted by Caddy at `mcp.<LMS_HOST>`.
+
+The MCP server holds no secrets: each request carries its own MCP key, forwarded
+to the facade as `X-MCP-Key`. Authorization is enforced by the facade
+(`is_staff`/`is_superuser`, live). No Hasura, no external stack. **Ulmo.**
+
+## Architecture
+
+```
+Claude / MCP client ──(Bearer key)──▶ openedxmcp container (FastMCP proxy)
+                                         │  X-MCP-Key
+                             ┌───────────┴───────────┐
+                       LMS /api/mcp/           CMS /api/mcp/cms/
+                    (people, enroll,          (course authoring,
+                     analytics, certs,          modulestore)
+                     reports, retire)
 ```
 
-## Config keys
+## Install
+
+```bash
+pip install tutor-contrib-openedxmcp
+tutor plugins enable openedxmcp
+
+# point at the Django app (PyPI, git URL, or a mounted local path)
+tutor config save --set OPENEDXMCP_PIP_REQUIREMENT=openedx-mcp
+
+tutor images build openedx openedxmcp    # rebuild LMS/CMS w/ the app; build MCP server
+tutor local launch                        # or: tutor k8s launch
+tutor local do init                        # migrations -> MCPKey tables
+```
+
+Then mint a key in Django admin (**Open edX Admin MCP → MCP keys**) and connect a
+client to `https://mcp.<LMS_HOST>/mcp`. The key-creation banner prints ready-to-
+paste connect steps. Full connect/security/tool docs live in the
+[`openedx-mcp` README](https://pypi.org/project/openedx-mcp/).
+
+## Config
 
 | Key | Default | Meaning |
 |---|---|---|
@@ -21,7 +55,25 @@ tutor local launch && tutor local do init
 | `OPENEDXMCP_PORT` | `8080` | server port |
 | `OPENEDXMCP_LMS_BASE_URL` | `http://lms:8000` | in-cluster LMS upstream |
 | `OPENEDXMCP_CMS_BASE_URL` | `http://cms:8000` | in-cluster CMS upstream |
+| `OPENEDXMCP_PUBLIC_URL` | `https://{{ ENDPOINT }}/mcp` | shown in the Django key page (injected into LMS/CMS as `OPENEDX_MCP_PUBLIC_URL`) |
 | `OPENEDXMCP_PIP_REQUIREMENT` | `openedx-mcp` | the Django app to install |
 
-The MCP server holds no secrets — each request carries its own MCP key, forwarded
-to the facade as `X-MCP-Key`. See `../README.md`.
+## What ships
+
+- Docker image build context (`templates/openedxmcp/build/…`) — the FastMCP proxy.
+- Patches: `caddyfile` (route `/mcp*`), docker-compose services (+ healthcheck),
+  k8s deployment/service (+ readiness/liveness on `/health`),
+  `openedx-common-settings` (injects `OPENEDX_MCP_PUBLIC_URL`),
+  `openedx-dockerfile-post-python-requirements` (pip-installs the app).
+
+The MCP server exposes an unauthenticated `/health` for probes.
+
+## Develop
+
+```bash
+pip install ruff build
+ruff check tutoropenedxmcp
+python -m build .          # CI asserts the wheel ships templates/
+```
+
+See [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md).

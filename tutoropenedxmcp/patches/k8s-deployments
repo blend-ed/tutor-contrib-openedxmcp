@@ -26,3 +26,15 @@ spec:
               value: "{{ OPENEDXMCP_PORT }}"
           ports:
             - containerPort: {{ OPENEDXMCP_PORT }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ OPENEDXMCP_PORT }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ OPENEDXMCP_PORT }}
+            initialDelaySeconds: 10
+            periodSeconds: 20
