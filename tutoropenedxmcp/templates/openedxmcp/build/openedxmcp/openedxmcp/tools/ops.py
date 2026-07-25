@@ -33,7 +33,7 @@ def register(mcp, client):
     def generate_certificate(course_id: str, username: str = "", student_set: str = "") -> dict:
         """Generate certificates. With username: one learner. Without: batch for the
         course (student_set = all_allowlisted | allowlisted_not_generated |
-        specific_student, default all). Async. Requires write:users."""
+        specific_student, default all). Async. Requires write:certificates."""
         body = {"course_id": course_id}
         if username:
             body["username"] = username
@@ -45,7 +45,7 @@ def register(mcp, client):
     def regenerate_certificates(course_id: str, statuses: list, confirm_token: str = "") -> dict:
         """Regenerate course certificates for the given statuses (e.g.
         ['downloadable','error']). Async. Call without confirm_token to preview.
-        Requires write:users."""
+        Requires write:certificates."""
         body = {"course_id": course_id, "statuses": statuses}
         if confirm_token:
             body["confirm_token"] = confirm_token
@@ -55,7 +55,7 @@ def register(mcp, client):
     def invalidate_certificate(username: str, course_id: str, notes: str = "",
                                confirm_token: str = "") -> dict:
         """Invalidate a learner's certificate. Destructive. Call without
-        confirm_token to preview. Requires the destructive scope."""
+        confirm_token to preview. Requires write:certificates + destructive."""
         body = {"username": username, "course_id": course_id, "notes": notes}
         if confirm_token:
             body["confirm_token"] = confirm_token
@@ -67,7 +67,7 @@ def register(mcp, client):
         """Enqueue an async report. kind = grades | problem_grade | students_features
         | may_enroll | inactive_enrolled | proctored_exam | course_survey. Returns a
         task id; poll with report_tasks and fetch links with report_downloads.
-        Requires read."""
+        Requires write:reports."""
         body = {"course_id": course_id, "kind": kind}
         if features:
             body["features"] = features
@@ -97,7 +97,7 @@ def register(mcp, client):
         """Start account retirement. full=True (default) deactivates credentials +
         queues PII removal — IRREVERSIBLE. full=False queues a status row only.
         Distinct from deactivate_user (reversible is_active flag). Call without
-        confirm_token to preview. Requires the destructive scope."""
+        confirm_token to preview. Requires write:users + destructive."""
         body = {"username": username, "full": full}
         if confirm_token:
             body["confirm_token"] = confirm_token

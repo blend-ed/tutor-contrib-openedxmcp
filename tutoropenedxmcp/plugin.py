@@ -42,6 +42,11 @@ config: dict[str, dict[str, t.Any]] = {
         # The pip requirement installed into the openedx image. Point at PyPI, a
         # git URL, or a local path mounted into the build context.
         "PIP_REQUIREMENT": "openedx-mcp",
+        # Public connector URL shown to admins on the Django key-creation page so
+        # they can paste it straight into their Claude client. Streamable-http
+        # mounts at /mcp. Override the scheme if this deployment does not
+        # terminate TLS.
+        "PUBLIC_URL": "https://{{ OPENEDXMCP_ENDPOINT }}/mcp",
     },
 }
 
