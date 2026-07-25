@@ -6,16 +6,27 @@ on:
   pull_request:
 
 jobs:
-  build-check:
+  lint-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install dev deps
+        run: python -m pip install --upgrade pip ruff build
+      - name: Lint (ruff)
+        run: ruff check tutoropenedxmcp
       - name: Byte-compile
         run: python -m compileall tutoropenedxmcp
-      - name: Build package (sdist + wheel)
+      - name: Build package (sdist + wheel) and assert templates shipped
         run: |
-          python -m pip install --upgrade build
           python -m build --outdir /tmp/dist .
+          python - <<'PY'
+          import glob, zipfile
+          whl = glob.glob("/tmp/dist/*.whl")[0]
+          names = zipfile.ZipFile(whl).namelist()
+          n = sum("templates/" in x for x in names)
+          assert n > 0, "wheel shipped no templates/ files — build context missing"
+          print(f"OK: {n} template files in wheel")
+          PY

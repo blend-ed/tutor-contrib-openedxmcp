@@ -19,6 +19,9 @@ def _extract_key(request):
 
 class KeyHeaderMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
+        # Liveness probe is public — never requires a key.
+        if request.url.path.rstrip("/").endswith("/health"):
+            return await call_next(request)
         key = _extract_key(request)
         if not key:
             return JSONResponse(
