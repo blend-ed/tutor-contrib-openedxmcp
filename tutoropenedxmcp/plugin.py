@@ -4,8 +4,8 @@ Tutor plugin for the open-source Open edX Admin MCP.
 Two moving parts, both wired here:
 
   1. The `openedx_mcp` Django app is pip-installed into the openedx image (LMS+CMS)
-     via Tutor's standard OPENEDX_EXTRA_PIP_REQUIREMENTS list, so the facade
-     endpoints (/api/mcp/ and /api/mcp/cms/) come up inside the existing LMS/CMS.
+     by a Dockerfile patch, so the facade endpoints (/api/mcp/ and /api/mcp/cms/)
+     come up inside the existing LMS/CMS with no extra operator steps.
   2. A standalone `openedxmcp` container runs the FastMCP server (streamable-http),
      fronted by Caddy at mcp.<LMS_HOST>. It forwards each caller's X-MCP-Key to the
      LMS/CMS facade. It holds no secrets — auth is the per-request key.
@@ -51,10 +51,17 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
     [(f"OPENEDXMCP_{k}", v) for k, v in config["defaults"].items()]
 )
 
-# The openedx-mcp Django app is installed via Tutor's standard
-# OPENEDX_EXTRA_PIP_REQUIREMENTS list (see README), not a custom patch, so the
-# operator controls the exact pin/source:
-#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp
+# --- auto-install the Django app into the openedx image (LMS+CMS) ---
+# This patch runs a plain `pip install` in the openedx Dockerfile, so the app is
+# present with zero operator steps — just `tutor images build openedx`. To pin a
+# specific version or source instead, append to Tutor's standard list, e.g.
+#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.4
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "openedx-dockerfile-post-python-requirements",
+        "RUN pip install openedx-mcp",
+    )
+)
 
 # --- MCP server image build/pull/push ---
 hooks.Filters.IMAGES_BUILD.add_item(
