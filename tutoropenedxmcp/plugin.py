@@ -4,8 +4,8 @@ Tutor plugin for the open-source Open edX Admin MCP.
 Two moving parts, both wired here:
 
   1. The `openedx_mcp` Django app is pip-installed into the openedx image (LMS+CMS)
-     via the OPENEDX_EXTRA_PIP_REQUIREMENTS patch, so the facade endpoints
-     (/api/mcp/ and /api/mcp/cms/) come up inside the existing LMS/CMS.
+     via Tutor's standard OPENEDX_EXTRA_PIP_REQUIREMENTS list, so the facade
+     endpoints (/api/mcp/ and /api/mcp/cms/) come up inside the existing LMS/CMS.
   2. A standalone `openedxmcp` container runs the FastMCP server (streamable-http),
      fronted by Caddy at mcp.<LMS_HOST>. It forwards each caller's X-MCP-Key to the
      LMS/CMS facade. It holds no secrets — auth is the per-request key.
@@ -39,9 +39,6 @@ config: dict[str, dict[str, t.Any]] = {
         # the hop stays inside the docker/k8s network, no public TLS needed.
         "LMS_BASE_URL": "http://lms:8000",
         "CMS_BASE_URL": "http://cms:8000",
-        # The pip requirement installed into the openedx image. Point at PyPI, a
-        # git URL, or a local path mounted into the build context.
-        "PIP_REQUIREMENT": "openedx-mcp",
         # Public connector URL shown to admins on the Django key-creation page so
         # they can paste it straight into their Claude client. Streamable-http
         # mounts at /mcp. Override the scheme if this deployment does not
@@ -54,13 +51,10 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
     [(f"OPENEDXMCP_{k}", v) for k, v in config["defaults"].items()]
 )
 
-# --- install the Django app into the LMS/CMS image ---
-hooks.Filters.ENV_PATCHES.add_item(
-    (
-        "openedx-dockerfile-post-python-requirements",
-        'RUN pip install "{{ OPENEDXMCP_PIP_REQUIREMENT }}"',
-    )
-)
+# The openedx-mcp Django app is installed via Tutor's standard
+# OPENEDX_EXTRA_PIP_REQUIREMENTS list (see README), not a custom patch, so the
+# operator controls the exact pin/source:
+#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp
 
 # --- MCP server image build/pull/push ---
 hooks.Filters.IMAGES_BUILD.add_item(

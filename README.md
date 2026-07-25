@@ -33,8 +33,9 @@ Claude / MCP client ──(Bearer key)──▶ openedxmcp container (FastMCP pr
 pip install tutor-contrib-openedxmcp
 tutor plugins enable openedxmcp
 
-# point at the Django app (PyPI, git URL, or a mounted local path)
-tutor config save --set OPENEDXMCP_PIP_REQUIREMENT=openedx-mcp
+# install the Django app into the openedx image via Tutor's standard list
+# (a PyPI name, a pinned version, a git URL, or a mounted local path all work)
+tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp
 
 tutor images build openedx openedxmcp    # rebuild LMS/CMS w/ the app; build MCP server
 tutor local launch                        # or: tutor k8s launch
@@ -56,7 +57,10 @@ paste connect steps. Full connect/security/tool docs live in the
 | `OPENEDXMCP_LMS_BASE_URL` | `http://lms:8000` | in-cluster LMS upstream |
 | `OPENEDXMCP_CMS_BASE_URL` | `http://cms:8000` | in-cluster CMS upstream |
 | `OPENEDXMCP_PUBLIC_URL` | `https://{{ ENDPOINT }}/mcp` | shown in the Django key page (injected into LMS/CMS as `OPENEDX_MCP_PUBLIC_URL`) |
-| `OPENEDXMCP_PIP_REQUIREMENT` | `openedx-mcp` | the Django app to install |
+
+The Django app itself is installed via Tutor's standard
+`OPENEDX_EXTRA_PIP_REQUIREMENTS` list (`tutor config save --append
+OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp`), not a plugin-specific config.
 
 ## What ships
 
