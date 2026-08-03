@@ -6,7 +6,7 @@ Two moving parts, both wired here:
   1. The `openedx_mcp` Django app is pip-installed into the openedx image (LMS+CMS)
      by a Dockerfile patch, so the facade endpoints (/api/mcp/ and /api/mcp/cms/)
      come up inside the existing LMS/CMS with no extra operator steps.
-  2. A standalone `openedxmcp` container runs the FastMCP server (streamable-http),
+  2. A standalone `openedxmcp` container runs the MCP server (streamable-http),
      fronted by Caddy at mcp.<LMS_HOST>. It forwards each caller's X-MCP-Key to the
      LMS/CMS facade. It holds no secrets — auth is the per-request key.
 
