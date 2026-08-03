@@ -10,3 +10,7 @@ __pycache__/
 .venv/
 env/
 .DS_Store
+
+# setuptools output from building the server package in-place. The image build
+# context (…/build/openedxmcp/) is tracked; its nested build/ output is not.
+tutoropenedxmcp/templates/openedxmcp/build/openedxmcp/build/
