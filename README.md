@@ -8,7 +8,7 @@ Tutor plugin that stands up the **Open edX Admin MCP** for staff/superusers:
 
 1. **Installs** the [`openedx-mcp`](https://pypi.org/project/openedx-mcp/) Django
    app into the LMS/CMS image (the REST facade at `/api/mcp/` and `/api/mcp/cms/`).
-2. **Runs** a standalone `openedxmcp` container — a FastMCP streamable-http server
+2. **Runs** a standalone `openedxmcp` container — an MCP streamable-http server
    that proxies to that facade, fronted by Caddy at `mcp.<LMS_HOST>`.
 
 The MCP server holds no secrets: each request carries its own MCP key, forwarded
@@ -18,7 +18,7 @@ to the facade as `X-MCP-Key`. Authorization is enforced by the facade
 ## Architecture
 
 ```
-Claude / MCP client ──(Bearer key)──▶ openedxmcp container (FastMCP proxy)
+Claude / MCP client ──(Bearer key)──▶ openedxmcp container (MCP proxy)
                                          │  X-MCP-Key
                              ┌───────────┴───────────┐
                        LMS /api/mcp/           CMS /api/mcp/cms/
@@ -64,7 +64,7 @@ to Tutor's standard `OPENEDX_EXTRA_PIP_REQUIREMENTS` list.
 
 ## What ships
 
-- Docker image build context (`templates/openedxmcp/build/…`) — the FastMCP proxy.
+- Docker image build context (`templates/openedxmcp/build/…`) — the MCP proxy.
 - Patches: `caddyfile` (route `/mcp*`), docker-compose services (+ healthcheck),
   k8s deployment/service (+ readiness/liveness on `/health`),
   `openedx-common-settings` (injects `OPENEDX_MCP_PUBLIC_URL`),

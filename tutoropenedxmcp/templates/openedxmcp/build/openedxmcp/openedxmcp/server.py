@@ -9,7 +9,7 @@ import logging
 import os
 
 import uvicorn
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from starlette.responses import JSONResponse
 from starlette.routing import Route
@@ -32,9 +32,11 @@ def build_app():
     cms_base = os.environ.get("OPENEDXMCP_CMS_BASE_URL")
     cms = FacadeClient(base_url=cms_base or None, path_prefix="api/mcp/cms")
     security = TransportSecuritySettings(enable_dns_rebinding_protection=False)
-    mcp = FastMCP("openedx-admin", stateless_http=True, transport_security=security)
+    mcp = MCPServer("openedx-admin")
     register_all(mcp, lms, cms)
-    app = mcp.streamable_http_app()
+    # stateless_http and transport_security moved off the constructor onto
+    # streamable_http_app() in mcp 2.0.
+    app = mcp.streamable_http_app(stateless_http=True, transport_security=security)
     # Unauthenticated liveness route for container/k8s probes (the middleware
     # lets /health through without a key).
     app.router.routes.append(Route("/health", _health, methods=["GET"]))
