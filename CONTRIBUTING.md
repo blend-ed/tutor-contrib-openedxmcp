@@ -1,6 +1,6 @@
 # Contributing to tutor-contrib-openedxmcp
 
-This Tutor plugin packages the FastMCP server image and installs the
+This Tutor plugin packages the MCP server image and installs the
 [`openedx-mcp`](https://github.com/blend-ed/openedx-mcp) Django app into LMS/CMS.
 
 ## Ground rules
