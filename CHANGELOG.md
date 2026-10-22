@@ -3,6 +3,21 @@
 All notable changes to `tutor-contrib-openedxmcp`. Format based on
 [Keep a Changelog](https://keepachangelog.com/). Ulmo release line.
 
+## [Unreleased]
+
+Needs the matching openedx-mcp release (pin bump to follow).
+
+### Changed
+- `unenroll_user` takes `confirm_token`: call once to preview, again to apply.
+- `bulk_enroll` takes `action` (`enroll` | `unenroll`); unenroll also withdraws
+  pending invites. Its docstring describes the new preview counts.
+- `create_user`, `course_detail` and `analytics_overview` docstrings describe
+  the activation email and the new `pending` counts.
+
+### Added
+- `audit_log` tool (LMS) — recent write-tool calls, filterable by tool/outcome.
+- `read_course_settings` tool (CMS) — course details and grading policy.
+
 ## [0.2.1]
 
 ### Fixed

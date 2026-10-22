@@ -19,7 +19,7 @@ def register(mcp, client):
     @mcp.tool()
     def analytics_overview(org: str = "") -> dict:
         """Platform (or single-org) stat cards: course count, total enrollments,
-        per-course enrollment counts. Cheap cached reads."""
+        total pending invites, per-course counts. Cheap cached reads."""
         return _get(client, "analytics/overview/", {"org": org} if org else None)
 
     @mcp.tool()
@@ -33,7 +33,8 @@ def register(mcp, client):
 
     @mcp.tool()
     def course_detail(course_id: str) -> dict:
-        """One course's metadata plus per-mode enrollment counts. course_id is the
+        """One course's metadata plus per-mode enrollment counts and pending (emails
+        invited via bulk_enroll with no account/enrollment yet). course_id is the
         course-v1 key (e.g. course-v1:Org+CS101+2024)."""
         return _get(client, f"courses/{course_id}/")
 
@@ -63,3 +64,16 @@ def register(mcp, client):
         """One learner's course grade (percent, passed, letter). May compute if
         not persisted — do not sweep many users with this."""
         return _get(client, f"grades/{username}/{course_id}/")
+
+    @mcp.tool()
+    def audit_log(tool: str = "", outcome: str = "", limit: int = 50, offset: int = 0) -> dict:
+        """Recent write-tool calls through this MCP, newest first: tool, outcome
+        (dry_run, attempt, success, error, denied), who, which key, how many
+        records were affected. Filter by tool and/or outcome. Superusers see
+        every key; staff see their own. Requires read."""
+        params = {"limit": limit, "offset": offset}
+        if tool:
+            params["tool"] = tool
+        if outcome:
+            params["outcome"] = outcome
+        return _get(client, "audit/", params)
