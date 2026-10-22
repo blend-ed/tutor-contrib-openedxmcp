@@ -3,6 +3,14 @@
 All notable changes to `tutor-contrib-openedxmcp`. Format based on
 [Keep a Changelog](https://keepachangelog.com/). Ulmo release line.
 
+## [Unreleased]
+
+### Fixed
+- MCP server no longer forwards whole non-JSON upstream bodies to the model. An
+  HTML page (e.g. the LMS 500 page, which carries the caller's username and
+  profile-image URL) becomes a one-line message with the HTTP status; other
+  text is capped at 300 characters. JSON error bodies pass through unchanged.
+
 ## [0.1.7]
 
 ### Changed

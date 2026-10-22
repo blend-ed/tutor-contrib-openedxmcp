@@ -12,6 +12,7 @@ import os
 import httpx
 
 _TIMEOUT = httpx.Timeout(30.0, connect=10.0)
+_MAX_TEXT = 300
 
 # Set per request by KeyHeaderMiddleware.
 current_key: "contextvars.ContextVar[str | None]" = contextvars.ContextVar(
@@ -27,6 +28,18 @@ class FacadeError(Exception):
 
 class MissingKeyError(Exception):
     pass
+
+
+def _summarize_text(resp):
+    """Short stand-in for a non-JSON body. Never forward a whole HTML page: an
+    LMS error page carries the caller's username, profile-image URL and ~10 KB
+    of markup into the model's context."""
+    ctype = resp.headers.get("content-type", "")
+    text = resp.text.strip()
+    if "html" in ctype or text[:15].lower().startswith(("<!doctype", "<html")):
+        return (f"Upstream returned an HTML page (HTTP {resp.status_code}) instead of "
+                "JSON; see the LMS/CMS logs for the cause.")
+    return text if len(text) <= _MAX_TEXT else text[:_MAX_TEXT] + "… [truncated]"
 
 
 class FacadeClient:
@@ -60,7 +73,7 @@ class FacadeClient:
             try:
                 detail = resp.json()
             except Exception:  # noqa: BLE001
-                detail = resp.text
+                detail = _summarize_text(resp)
             raise FacadeError(resp.status_code, detail)
         ctype = resp.headers.get("content-type", "")
-        return resp.json() if ctype.startswith("application/json") else {"raw": resp.text}
+        return resp.json() if ctype.startswith("application/json") else {"raw": _summarize_text(resp)}
