@@ -3,13 +3,37 @@
 All notable changes to `tutor-contrib-openedxmcp`. Format based on
 [Keep a Changelog](https://keepachangelog.com/). Ulmo release line.
 
-## [Unreleased]
+## [0.2.1]
 
 ### Fixed
 - MCP server no longer forwards whole non-JSON upstream bodies to the model. An
   HTML page (e.g. the LMS 500 page, which carries the caller's username and
   profile-image URL) becomes a one-line message with the HTTP status; other
   text is capped at 300 characters. JSON error bodies pass through unchanged.
+- The openedx image now installs `openedx-mcp==0.1.8` instead of an unpinned
+  `openedx-mcp`. The unpinned line never changed, so Docker could reuse a cached
+  layer and keep an old app after a rebuild. 0.1.8 carries the course team,
+  user roles and full course outline fixes.
+
+## [0.2.0]
+
+Never published to PyPI; its changes ship in 0.2.1.
+
+### Changed
+- MCP server migrated to the `mcp` 2.0 SDK (`mcp>=2.0.0,<3`): `FastMCP` became
+  `MCPServer`, and `stateless_http` / `transport_security` moved to
+  `streamable_http_app()`. Tool definitions are unchanged.
+- Tool handlers now run on worker threads instead of the event loop, so upstream
+  LMS/CMS calls no longer queue behind each other. The per-request MCP key still
+  reaches the facade.
+
+## [0.1.8]
+
+Never published to PyPI.
+
+### Fixed
+- Capped the server at `mcp<2`: `mcp` 2.0.0 removed `mcp.server.fastmcp`, so a
+  fresh image build crashed on import.
 
 ## [0.1.7]
 

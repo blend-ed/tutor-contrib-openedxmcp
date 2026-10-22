@@ -34,8 +34,9 @@ pip install tutor-contrib-openedxmcp
 tutor plugins enable openedxmcp
 
 # The openedx-mcp Django app auto-installs into the openedx image (Dockerfile
-# patch) — no extra step. To PIN a version/source, append to Tutor's list, e.g.
-#   tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.4
+# patch) — no extra step. Each plugin release pins the matching openedx-mcp
+# version. To use another version/source, append to Tutor's list, e.g.
+#   tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.8
 
 tutor images build openedx openedxmcp    # rebuild LMS/CMS w/ the app; build MCP server
 tutor local launch                        # or: tutor k8s launch
@@ -59,8 +60,9 @@ paste connect steps. Full connect/security/tool docs live in the
 | `OPENEDXMCP_PUBLIC_URL` | `https://{{ ENDPOINT }}/mcp` | shown in the Django key page (injected into LMS/CMS as `OPENEDX_MCP_PUBLIC_URL`) |
 
 The Django app auto-installs via a Dockerfile patch
-(`openedx-dockerfile-post-python-requirements`). To pin a version/source, append
-to Tutor's standard `OPENEDX_EXTRA_PIP_REQUIREMENTS` list.
+(`openedx-dockerfile-post-python-requirements`), pinned to the openedx-mcp
+version this plugin release was tested with. To use another version/source,
+append to Tutor's standard `OPENEDX_EXTRA_PIP_REQUIREMENTS` list.
 
 ## What ships
 

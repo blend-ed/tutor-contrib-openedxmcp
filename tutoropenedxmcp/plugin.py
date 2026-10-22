@@ -52,14 +52,17 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
 )
 
 # --- auto-install the Django app into the openedx image (LMS+CMS) ---
-# This patch runs a plain `pip install` in the openedx Dockerfile, so the app is
-# present with zero operator steps — just `tutor images build openedx`. To pin a
-# specific version or source instead, append to Tutor's standard list, e.g.
-#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.4
+# This patch runs `pip install` in the openedx Dockerfile, so the app is present
+# with zero operator steps — just `tutor images build openedx`. The version is
+# pinned: an unpinned line never changes, so Docker reuses the cached layer and a
+# rebuild silently keeps the old app. Bump this pin with each openedx-mcp release.
+# To use another version or source, append to Tutor's standard list, e.g.
+#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.8
+OPENEDX_MCP_REQUIREMENT = "openedx-mcp==0.1.8"
 hooks.Filters.ENV_PATCHES.add_item(
     (
         "openedx-dockerfile-post-python-requirements",
-        "RUN pip install openedx-mcp",
+        f"RUN pip install {OPENEDX_MCP_REQUIREMENT}",
     )
 )
 
