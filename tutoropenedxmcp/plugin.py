@@ -57,8 +57,8 @@ hooks.Filters.CONFIG_DEFAULTS.add_items(
 # pinned: an unpinned line never changes, so Docker reuses the cached layer and a
 # rebuild silently keeps the old app. Bump this pin with each openedx-mcp release.
 # To use another version or source, append to Tutor's standard list, e.g.
-#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.8
-OPENEDX_MCP_REQUIREMENT = "openedx-mcp==0.1.8"
+#     tutor config save --append OPENEDX_EXTRA_PIP_REQUIREMENTS=openedx-mcp==0.1.9
+OPENEDX_MCP_REQUIREMENT = "openedx-mcp==0.1.9"
 hooks.Filters.ENV_PATCHES.add_item(
     (
         "openedx-dockerfile-post-python-requirements",

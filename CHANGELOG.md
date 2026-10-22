@@ -3,9 +3,12 @@
 All notable changes to `tutor-contrib-openedxmcp`. Format based on
 [Keep a Changelog](https://keepachangelog.com/). Ulmo release line.
 
-## [Unreleased]
+## [0.2.2]
 
-Needs the matching openedx-mcp release (pin bump to follow).
+### Changed
+- The openedx image now installs `openedx-mcp==0.1.9`: Ulmo `create_user`,
+  failed writes keep their audit row, JSON errors, pending enrolments, and the
+  audit and course-settings reads these tools call.
 
 ### Changed
 - `unenroll_user` takes `confirm_token`: call once to preview, again to apply.

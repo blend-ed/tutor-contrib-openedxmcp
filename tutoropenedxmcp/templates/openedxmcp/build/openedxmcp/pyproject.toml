@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openedxmcp"
-version = "0.2.1"
+version = "0.2.2"
 description = "MCP server proxying to the openedx-mcp facade (staff/superuser admin)"
 requires-python = ">=3.11"
 dependencies = [
