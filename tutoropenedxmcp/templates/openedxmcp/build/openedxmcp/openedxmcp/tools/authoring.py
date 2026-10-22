@@ -28,6 +28,13 @@ def register(mcp, client):
         return _get(client, f"courses/{course_id}/outline/")
 
     @mcp.tool()
+    def read_course_settings(course_id: str) -> dict:
+        """A course's schedule, pacing and about details plus its grading policy
+        (graders with weights and drop counts, grade cutoffs, grace period).
+        Read this before update_course_settings. Requires read."""
+        return _get(client, f"courses/{course_id}/settings/")
+
+    @mcp.tool()
     def create_block(parent_locator: str, category: str, display_name: str = "",
                      boilerplate: str = "") -> dict:
         """Create one block under parent_locator. category is chapter, sequential,
